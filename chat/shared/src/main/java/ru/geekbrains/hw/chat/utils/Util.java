@@ -1,4 +1,4 @@
-package ru.geekbrains.hw.chat.client.utils;
+package ru.geekbrains.hw.chat.utils;
 
 public class Util {
     @SafeVarargs

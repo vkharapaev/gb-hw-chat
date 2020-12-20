@@ -3,7 +3,7 @@ package ru.geekbrains.hw.chat.client.ui.login;
 import javafx.application.Platform;
 import ru.geekbrains.hw.chat.client.Client;
 import ru.geekbrains.hw.chat.client.ClientApp;
-import ru.geekbrains.hw.chat.client.utils.Util;
+import ru.geekbrains.hw.chat.utils.Util;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
