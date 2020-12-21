@@ -4,7 +4,7 @@ plugins {
 }
 
 javafx {
-    version = "15.0.1"
+    version = "11.0.1"
     modules("javafx.controls", "javafx.fxml")
 }
 
@@ -16,7 +16,5 @@ dependencies {
 application {
     mainClass.set("ru.geekbrains.hw.chat.client.ClientApp")
 }
-
-
 
 description = "client"

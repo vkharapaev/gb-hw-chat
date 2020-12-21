@@ -4,24 +4,30 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client {
 
     private volatile boolean authorized;
-    private volatile Socket socket;
-    private volatile DataInputStream in;
-    private volatile DataOutputStream out;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     private volatile OnAuthorizationChanged authorizationListener;
-    private volatile OnMessageReceived messageListener;
     private final String host;
     private final int port;
+    private final BlockingQueue<String> messageQueue;
     private Thread signInThread;
 
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
+        messageQueue = new LinkedBlockingQueue<>();
+    }
+
+    public BlockingQueue<String> getMessageQueue() {
+        return messageQueue;
     }
 
     public void start() {
@@ -36,19 +42,18 @@ public class Client {
                         String strFromServer = in.readUTF();
                         if (strFromServer.startsWith("/authok")) {
                             setAuthorized(true);
-                            TimeUnit.SECONDS.sleep(1);
                             break;
                         }
                         System.out.printf("from server: %s\n", strFromServer);
-                        notifyAboutMessage(strFromServer);
+                        messageQueue.put(strFromServer);
                     }
                     while (true) {
                         String strFromServer = in.readUTF();
                         if (strFromServer.equalsIgnoreCase("/end")) {
                             break;
                         }
-                        System.out.printf("from server: %s\n", strFromServer);
-                        notifyAboutMessage(strFromServer);
+                        System.out.printf("from server2: %s\n", strFromServer);
+                        messageQueue.put(strFromServer);
                     }
                 } catch (IOException | InterruptedException e) {
                     setAuthorized(false);
@@ -85,9 +90,9 @@ public class Client {
                 if (socket != null && !socket.isClosed()) {
                     out.writeUTF(String.format("/auth %s %s", login, pass));
                 } else {
-                    notifyAboutMessage("The server is not responding.");
+                    messageQueue.put("The server is not responding.");
                 }
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -122,22 +127,8 @@ public class Client {
         this.authorizationListener = authorizationListener;
     }
 
-    public void setMessageListener(OnMessageReceived messageListener) {
-        this.messageListener = messageListener;
-    }
-
-    private void notifyAboutMessage(String msg) {
-        if (messageListener != null) {
-            messageListener.onReceived(msg);
-        }
-    }
-
     public interface OnAuthorizationChanged {
         void onChange(boolean isAuthorized);
-    }
-
-    public interface OnMessageReceived {
-        void onReceived(String msg);
     }
 
 }

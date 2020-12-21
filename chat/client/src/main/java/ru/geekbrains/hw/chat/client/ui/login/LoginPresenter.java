@@ -3,22 +3,29 @@ package ru.geekbrains.hw.chat.client.ui.login;
 import javafx.application.Platform;
 import ru.geekbrains.hw.chat.client.Client;
 import ru.geekbrains.hw.chat.client.ClientApp;
+import ru.geekbrains.hw.chat.client.MessageQueue;
 import ru.geekbrains.hw.chat.utils.Util;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginContract.View view;
     private final Client client;
+    private MessageQueue messageQueue;
 
     public LoginPresenter() {
         client = ClientApp.getInstance().getClient();
-        client.setMessageListener(msg -> Platform.runLater(() -> view.showError(msg)));
         client.setAuthorizationListener(isAuthorized -> Platform.runLater(() -> processAuthorizationChange(isAuthorized)));
     }
 
     @Override
     public void takeView(LoginContract.View view) {
         this.view = view;
+        readMessages();
+    }
+
+    private void readMessages() {
+        messageQueue = new MessageQueue(client.getMessageQueue());
+        messageQueue.start(message -> Platform.runLater(() -> view.showError(message)));
     }
 
     @Override
@@ -37,6 +44,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     public void processAuthorizationChange(boolean isAuthorized) {
         if (isAuthorized) {
+            messageQueue.stop();
             view.goToChatWindow();
         }
     }

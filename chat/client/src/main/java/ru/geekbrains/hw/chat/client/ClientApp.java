@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -54,8 +53,7 @@ public class ClientApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setMinWidth(WINDOW_WIDTH);
         primaryStage.setMinHeight(WINDOW_HEIGHT);
-        URL resource = getClass().getResource(LAYOUT_LOGIN);
-        Parent root = FXMLLoader.load(resource);
+        Parent root = FXMLLoader.load(getClass().getResource(LAYOUT_LOGIN));
         primaryStage.setTitle(String.format("The Chat %s:%d", client.getHost(), client.getPort()));
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         primaryStage.setScene(scene);
