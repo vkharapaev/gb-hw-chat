@@ -5,6 +5,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.geekbrains.hw.chat.client.adapters.data.HistoryRepositoryImpl;
+import ru.geekbrains.hw.chat.client.frameworks.ClientImpl;
+import ru.geekbrains.hw.chat.client.frameworks.HistoryDataSourceImpl;
+import ru.geekbrains.hw.chat.client.usecases.Client;
+import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractorImpl;
+import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractor;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,8 +23,8 @@ import java.util.List;
  */
 public class ClientApp extends Application {
 
-    public static final String LAYOUT_CHAT = "ui/chat/chat_layout.fxml";
-    public static final String LAYOUT_LOGIN = "ui/login/aut_layout.fxml";
+    public static final String LAYOUT_CHAT = "layouts/chat/chat_layout.fxml";
+    public static final String LAYOUT_LOGIN = "layouts/login/aut_layout.fxml";
 
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 600;
@@ -28,6 +36,7 @@ public class ClientApp extends Application {
 
     private Client client;
     private Scene scene;
+    private ClientInteractor clientInteractor;
 
     public static void main(String[] args) {
         launch(args);
@@ -44,9 +53,12 @@ public class ClientApp extends Application {
     @Override
     public void init() {
         List<String> args = getParameters().getUnnamed();
+        HistoryInteractor historyInteractor =
+                new HistoryInteractorImpl(new HistoryRepositoryImpl(new HistoryDataSourceImpl()));
+        clientInteractor = new ClientInteractorImpl(historyInteractor);
         client = args.size() != 2 ?
-                new Client(DEFAULT_HOST, DEFAULT_PORT) :
-                new Client(args.get(0), Integer.parseInt(args.get(1)));
+                new ClientImpl(clientInteractor, DEFAULT_HOST, DEFAULT_PORT) :
+                new ClientImpl(clientInteractor, args.get(0), Integer.parseInt(args.get(1)));
     }
 
     @Override
@@ -68,7 +80,7 @@ public class ClientApp extends Application {
         }
     }
 
-    public Client getClient() {
-        return client;
+    public ClientInteractor getClient() {
+        return clientInteractor;
     }
 }

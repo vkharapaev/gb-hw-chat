@@ -1,4 +1,4 @@
-package ru.geekbrains.hw.chat.client.ui;
+package ru.geekbrains.hw.chat.client.adapters.presenters;
 
 public interface BasePresenter<T> {
 
