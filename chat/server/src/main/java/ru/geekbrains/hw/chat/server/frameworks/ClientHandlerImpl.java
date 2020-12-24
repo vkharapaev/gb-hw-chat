@@ -12,11 +12,12 @@ import java.net.SocketException;
 public class ClientHandlerImpl implements ClientHandler {
 
     private static final int TIME_OUT = 120000;
+
     private final Socket socket;
     private final DataInputStream in;
     private final DataOutputStream out;
 
-    public ClientHandlerImpl(Socket socket, ClientHandlerInteractor interactor) {
+    public ClientHandlerImpl(ServerImpl server, Socket socket, ClientHandlerInteractor interactor) {
         System.out.printf("The client %s:%d connected.\n", socket.getInetAddress().getHostAddress(), socket.getPort());
 
         this.socket = socket;
@@ -29,9 +30,7 @@ public class ClientHandlerImpl implements ClientHandler {
             throw new RuntimeException(e);
         }
 
-        Thread thread = new Thread(interactor::onStart);
-        thread.setDaemon(true);
-        thread.start();
+        server.getExecutorService().execute(interactor::onStart);
     }
 
     @Override
