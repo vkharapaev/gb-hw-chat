@@ -1,4 +1,4 @@
-package ru.geekbrains.hw.chat.client;
+package ru.geekbrains.hw.chat.client.utils;
 
 import java.util.concurrent.BlockingQueue;
 

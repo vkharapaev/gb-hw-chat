@@ -3,7 +3,7 @@ package ru.geekbrains.hw.chat.client;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ClientTest {
+public class ClientImplTest {
 
     @Test
     public void test() {

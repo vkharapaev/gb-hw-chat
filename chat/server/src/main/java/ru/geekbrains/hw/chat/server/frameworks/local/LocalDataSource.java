@@ -11,14 +11,13 @@ public class LocalDataSource implements DataSource {
     private final UserDao userDao;
 
     public LocalDataSource() {
-        userDao = new UserDao();
+        userDao = new UserDao(this);
     }
 
     @Override
     public void start() {
         try {
             connection = connect();
-            userDao.setConnection(connection);
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
@@ -55,4 +54,10 @@ public class LocalDataSource implements DataSource {
         return DriverManager.getConnection("jdbc:sqlite:main.db");
     }
 
+    public Connection getConnection() {
+        if (connection == null) {
+            throw new RuntimeException("No database connection");
+        }
+        return connection;
+    }
 }

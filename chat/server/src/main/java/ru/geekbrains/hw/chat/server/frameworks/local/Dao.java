@@ -5,17 +5,14 @@ import java.sql.SQLException;
 
 abstract class Dao {
 
-    private Connection connection;
+    private final LocalDataSource dataSource;
 
-    void setConnection(Connection connection) {
-        this.connection = connection;
+    public Dao(LocalDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     protected Connection getConnection() {
-        if (connection == null) {
-            throw new RuntimeException("No database connection");
-        }
-        return connection;
+        return dataSource.getConnection();
     }
 
     abstract void close() throws SQLException;

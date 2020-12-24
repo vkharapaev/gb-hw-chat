@@ -25,6 +25,10 @@ class UserDao extends Dao {
     private PreparedStatement selectUserByNickStatement;
     private PreparedStatement updateUserNickStatement;
 
+    public UserDao(LocalDataSource dataSource) {
+        super(dataSource);
+    }
+
     User getUser(String login, String pass) {
         try {
             PreparedStatement statement = getSelectUserStatement();

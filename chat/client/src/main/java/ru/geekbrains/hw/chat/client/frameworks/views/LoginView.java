@@ -1,4 +1,4 @@
-package ru.geekbrains.hw.chat.client.ui.login;
+package ru.geekbrains.hw.chat.client.frameworks.views;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -6,6 +6,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import ru.geekbrains.hw.chat.client.ClientApp;
+import ru.geekbrains.hw.chat.client.adapters.presenters.login.LoginContract;
+import ru.geekbrains.hw.chat.client.adapters.presenters.login.LoginPresenter;
 
 import java.net.URL;
 import java.util.ResourceBundle;

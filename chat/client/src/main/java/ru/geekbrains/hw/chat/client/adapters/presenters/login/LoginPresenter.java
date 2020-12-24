@@ -1,20 +1,21 @@
-package ru.geekbrains.hw.chat.client.ui.login;
+package ru.geekbrains.hw.chat.client.adapters.presenters.login;
 
 import javafx.application.Platform;
-import ru.geekbrains.hw.chat.client.Client;
 import ru.geekbrains.hw.chat.client.ClientApp;
-import ru.geekbrains.hw.chat.client.MessageQueue;
+import ru.geekbrains.hw.chat.client.utils.MessageQueue;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
 import ru.geekbrains.hw.chat.utils.Util;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
     private LoginContract.View view;
-    private final Client client;
+    private final ClientInteractor clientInteractor;
     private MessageQueue messageQueue;
 
     public LoginPresenter() {
-        client = ClientApp.getInstance().getClient();
-        client.setAuthorizationListener(isAuthorized -> Platform.runLater(() -> processAuthorizationChange(isAuthorized)));
+        clientInteractor = ClientApp.getInstance().getClient();
+        clientInteractor.setAuthorizationListener(isAuthorized ->
+                Platform.runLater(() -> processAuthorizationChange(isAuthorized)));
     }
 
     @Override
@@ -24,7 +25,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void readMessages() {
-        messageQueue = new MessageQueue(client.getMessageQueue());
+        messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
         messageQueue.start(message -> Platform.runLater(() -> view.showError(message)));
     }
 
@@ -39,7 +40,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
 
         view.showError("Connecting...");
-        client.signIn(login, pass);
+        clientInteractor.signIn(login, pass);
     }
 
     public void processAuthorizationChange(boolean isAuthorized) {

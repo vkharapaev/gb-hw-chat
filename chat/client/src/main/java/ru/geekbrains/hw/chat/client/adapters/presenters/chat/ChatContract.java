@@ -1,10 +1,10 @@
-package ru.geekbrains.hw.chat.client.ui.chat;
+package ru.geekbrains.hw.chat.client.adapters.presenters.chat;
 
-import ru.geekbrains.hw.chat.client.ui.BasePresenter;
-import ru.geekbrains.hw.chat.client.ui.BaseView;
+import ru.geekbrains.hw.chat.client.adapters.presenters.BasePresenter;
+import ru.geekbrains.hw.chat.client.adapters.presenters.BaseView;
 
-class ChatContract {
-    interface View extends BaseView<Presenter> {
+public class ChatContract {
+    public interface View extends BaseView<Presenter> {
 
         /**
          * Get a message from the message text field.
@@ -31,7 +31,7 @@ class ChatContract {
         void goToLoginWindow();
     }
 
-    interface Presenter extends BasePresenter<View> {
+    public interface Presenter extends BasePresenter<View> {
 
         /**
          * Send a message to the chat
