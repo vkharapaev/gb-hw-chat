@@ -2,6 +2,7 @@ package ru.geekbrains.hw.chat.client.adapters.presenters.login;
 
 import javafx.application.Platform;
 import ru.geekbrains.hw.chat.client.ClientApp;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
 import ru.geekbrains.hw.chat.utils.Util;
@@ -14,8 +15,6 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     public LoginPresenter() {
         clientInteractor = ClientApp.getInstance().getClient();
-        clientInteractor.setAuthorizationListener(isAuthorized ->
-                Platform.runLater(() -> processAuthorizationChange(isAuthorized)));
     }
 
     @Override
@@ -26,7 +25,14 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     private void readMessages() {
         messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
-        messageQueue.start(message -> Platform.runLater(() -> view.showError(message)));
+        messageQueue.start(message -> {
+            if (message.startsWith(ClientInteractorImpl.MSG_END_AUTH)) {
+                messageQueue.stop();
+                Platform.runLater(() -> view.goToChatWindow());
+            } else {
+                Platform.runLater(() -> view.showError(message));
+            }
+        });
     }
 
     @Override
@@ -43,10 +49,4 @@ public class LoginPresenter implements LoginContract.Presenter {
         clientInteractor.signIn(login, pass);
     }
 
-    public void processAuthorizationChange(boolean isAuthorized) {
-        if (isAuthorized) {
-            messageQueue.stop();
-            view.goToChatWindow();
-        }
-    }
 }

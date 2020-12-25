@@ -11,13 +11,7 @@ public interface ClientInteractor {
 
     void signIn(String login, String pass);
 
-    void setAuthorizationListener(OnAuthorizationChanged authorizationListener);
-
     BlockingQueue<String> getMessageQueue();
 
     void sendMsg(String message);
-
-    interface OnAuthorizationChanged {
-        void onChange(boolean isAuthorized);
-    }
 }

@@ -10,8 +10,11 @@ public class ClientInteractorImpl implements ClientInteractor {
     private static final int HISTORY_LINES_COUNT = 100;
     private final BlockingQueue<String> messageQueue;
     private final HistoryInteractor historyInteractor;
-    private Client client;
     private final Companion companion;
+    private Client client;
+
+    public static final String MSG_END_AUTH = "//endauth";
+    public static final String MSG_END_CHAT = "//endchat";
 
     public ClientInteractorImpl(HistoryInteractor historyInteractor) {
         this.historyInteractor = historyInteractor;
@@ -36,16 +39,20 @@ public class ClientInteractorImpl implements ClientInteractor {
 
     @Override
     public void start() {
-        setAuthorized(false);
         client.start(() -> {
             try {
                 authenticate();
                 showHistory();
                 readMessages();
             } catch (IOException | InterruptedException e) {
-                setAuthorized(false);
                 e.printStackTrace();
                 client.closeConnection();
+            } finally {
+                try {
+                    messageQueue.put(MSG_END_CHAT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -54,7 +61,7 @@ public class ClientInteractorImpl implements ClientInteractor {
         while (true) {
             String strFromServer = client.readMessage();
             if (strFromServer.startsWith("/authok")) {
-                setAuthorized(true);
+                messageQueue.put(MSG_END_AUTH);
                 break;
             }
             System.out.printf("from server: %s\n", strFromServer);
@@ -72,9 +79,6 @@ public class ClientInteractorImpl implements ClientInteractor {
     private void readMessages() throws IOException, InterruptedException {
         while (true) {
             String strFromServer = client.readMessage();
-            if (strFromServer.equalsIgnoreCase("/end")) {
-                break;
-            }
             System.out.printf("from server2: %s\n", strFromServer);
             messageQueue.put(strFromServer);
             historyInteractor.storeMessage(strFromServer);
@@ -87,7 +91,6 @@ public class ClientInteractorImpl implements ClientInteractor {
             if (client.isAuthInProgress()) {
                 return;
             }
-
             client.startSignInTask(() -> {
                 if (client.isConnectionClosed()) {
                     start();
@@ -106,32 +109,8 @@ public class ClientInteractorImpl implements ClientInteractor {
         }
     }
 
-    public void setAuthorized(boolean authorized) {
-        synchronized (companion) {
-            boolean tmpAuthorized = companion.isAuthorized();
-            companion.setAuthorized(authorized);
-            if (tmpAuthorized != authorized && companion.getAuthorizationListener() != null) {
-                companion.getAuthorizationListener().onChange(authorized);
-            }
-        }
-    }
-
-    public void setAuthorizationListener(OnAuthorizationChanged authorizationListener) {
-        companion.setAuthorizationListener(authorizationListener);
-    }
-
     private static class Companion {
-        private boolean authorized;
         private String login;
-        private OnAuthorizationChanged authorizationListener;
-
-        synchronized boolean isAuthorized() {
-            return authorized;
-        }
-
-        synchronized void setAuthorized(boolean authorized) {
-            this.authorized = authorized;
-        }
 
         public String getLogin() {
             return login;
@@ -139,14 +118,6 @@ public class ClientInteractorImpl implements ClientInteractor {
 
         public void setLogin(String login) {
             this.login = login;
-        }
-
-        public OnAuthorizationChanged getAuthorizationListener() {
-            return authorizationListener;
-        }
-
-        public void setAuthorizationListener(OnAuthorizationChanged authorizationListener) {
-            this.authorizationListener = authorizationListener;
         }
     }
 
