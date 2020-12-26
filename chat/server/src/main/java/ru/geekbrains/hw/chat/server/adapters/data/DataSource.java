@@ -7,6 +7,8 @@ public interface DataSource {
 
     User getUser(String login, String pass);
 
+    User createUser(String login, String nick, String pass);
+
     boolean changeNick(long userId, String newNick);
 
     void stop();

@@ -9,13 +9,6 @@ public class ChatContract {
     public interface View extends BaseView<Presenter> {
 
         /**
-         * Get a message from the message text field.
-         *
-         * @return Message
-         */
-        String getMessage();
-
-        /**
          * Clear a message in the message text field
          */
         void clearMessageField();
@@ -44,6 +37,6 @@ public class ChatContract {
         /**
          * Send a message to the chat
          */
-        void sendMessage();
+        void sendMessage(String message);
     }
 }

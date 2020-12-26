@@ -15,7 +15,6 @@ public class ClientImpl implements Client {
     private DataOutputStream out;
     private final String host;
     private final int port;
-    private Thread signInThread;
 
     public ClientImpl(ClientInteractor interactor, String host, int port) {
         this.host = host;
@@ -56,18 +55,6 @@ public class ClientImpl implements Client {
     @Override
     public boolean isConnectionClosed() {
         return socket == null || socket.isClosed();
-    }
-
-    @Override
-    public void startSignInTask(Runnable signInTask) {
-        signInThread = new Thread(signInTask);
-        signInThread.setDaemon(true);
-        signInThread.start();
-    }
-
-    @Override
-    public boolean isAuthInProgress() {
-        return signInThread != null && signInThread.isAlive();
     }
 
     @Override

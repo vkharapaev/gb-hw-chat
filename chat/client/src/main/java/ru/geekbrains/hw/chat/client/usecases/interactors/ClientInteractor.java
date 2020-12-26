@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.client.usecases.interactors;
 
+import io.reactivex.Completable;
 import ru.geekbrains.hw.chat.client.usecases.Client;
 
 import java.util.concurrent.BlockingQueue;
@@ -13,11 +14,13 @@ public interface ClientInteractor {
 
     void start();
 
-    void signIn(String login, String pass);
+    Completable signIn(String login, String pass);
 
     BlockingQueue<String> getMessageQueue();
 
     BlockingQueue<String> getClientsMessageQueue();
 
-    void sendMsg(String message);
+    Completable sendMessage(String message);
+
+    Completable register(String login, String nick, String pass);
 }

@@ -1,4 +1,4 @@
-package ru.geekbrains.hw.chat.client.adapters.presenters.login;
+package ru.geekbrains.hw.chat.client.adapters.presenters.reg;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -11,21 +11,21 @@ import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
 import ru.geekbrains.hw.chat.utils.Util;
 
-public class LoginPresenter implements LoginContract.Presenter {
+public class RegPresenter implements RegContract.Presenter {
 
-    private LoginContract.View view;
+    private RegContract.View view;
     private final ClientInteractor clientInteractor;
     private MessageQueue messageQueue;
-    private Disposable signInDisposable;
     private final CompositeDisposable disposables;
+    private Disposable regDisposable;
 
-    public LoginPresenter() {
+    public RegPresenter() {
         this.clientInteractor = ClientApp.getInstance().getClient();
         this.disposables = new CompositeDisposable();
     }
 
     @Override
-    public void takeView(LoginContract.View view) {
+    public void takeView(RegContract.View view) {
         this.view = view;
         readMessages();
     }
@@ -35,7 +35,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         messageQueue.start(message -> {
             if (message.startsWith(ClientInteractorImpl.MSG_END_AUTH)) {
                 close();
-                Platform.runLater(() -> view.goToAuthWindow());
+                Platform.runLater(() -> view.goToChatWindow());
             } else {
                 Platform.runLater(() -> view.showError(message));
             }
@@ -43,35 +43,36 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void signIn() {
-        String login = Util.nvl(view.getLogin(), "").trim();
-        String pass = Util.nvl(view.getPass(), "").trim();
+    public void goBack() {
+        close();
+        view.goToLoginWindow();
+    }
 
-        if (login.isEmpty() || pass.isEmpty()) {
-            view.showError("Please, enter a login and password");
+    @Override
+    public void join(String login, String pass, String nick) {
+
+        login = Util.nvl(login, "").trim();
+        pass = Util.nvl(pass, "").trim();
+        nick = Util.nvl(nick, "").trim();
+
+        if (login.isEmpty() || pass.isEmpty() || nick.isEmpty()) {
+            view.showError("Please, enter a login, nick and password");
             return;
         }
 
         view.showError("Connecting...");
 
-        if (signInDisposable == null || signInDisposable.isDisposed()) {
-            signInDisposable = clientInteractor.signIn(login, pass)
+        if (regDisposable == null || regDisposable.isDisposed()) {
+            regDisposable = clientInteractor.register(login, nick, pass)
                     .subscribeOn(Schedulers.io())
                     .observeOn(JavaFxScheduler.platform())
                     .subscribe();
-            disposables.add(signInDisposable);
+            disposables.add(regDisposable);
         }
-    }
-
-    @Override
-    public void signUp() {
-        close();
-        view.goToRegWindow();
     }
 
     private void close() {
         disposables.clear();
         messageQueue.stop();
     }
-
 }

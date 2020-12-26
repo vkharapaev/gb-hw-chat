@@ -58,28 +58,43 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
     private void authenticate() throws IOException {
         clientHandler.setTimer();
         while (true) {
-            String str = clientHandler.readMessage();
-            if (str.startsWith("/auth")) {
-                String[] parts = str.split("\\s", 3);
+            String message = clientHandler.readMessage();
+            if (message.startsWith("/auth")) {
+                String[] parts = message.split("\\s", 3);
                 if (parts.length == 3) {
                     user = serverInteractor.getUserRepository().getUser(parts[1], parts[2]);
                 }
-                if (user != null) {
-                    if (serverInteractor.subscribe(this, user.getNick())) {
-                        clientHandler.sendMsg("/authok " + user.getNick());
-                        serverInteractor.broadcastClientsList();
-                        serverInteractor.broadcast(user.getNick() + " entered the chat");
-                        clientHandler.cancelTimer();
-                        return;
-                    } else {
-                        clientHandler.sendMsg("The account is already in use.");
-                        user = null;
-                    }
-                } else {
-                    clientHandler.sendMsg("The login/pass is not correct.");
+                if (checkClient()) {
+                    return;
+                }
+            } else if (message.startsWith("/reg")) {
+                String[] parts = message.split("\\s", 4);
+                if (parts.length == 4) {
+                    user = serverInteractor.getUserRepository().createUser(parts[1], parts[2], parts[3]);
+                }
+                if (checkClient()) {
+                    return;
                 }
             }
         }
+    }
+
+    private boolean checkClient() {
+        if (user != null) {
+            if (serverInteractor.subscribe(this, user.getNick())) {
+                clientHandler.sendMsg("/authok " + user.getNick());
+                serverInteractor.broadcastClientsList();
+                serverInteractor.broadcast(user.getNick() + " entered the chat");
+                clientHandler.cancelTimer();
+                return true;
+            } else {
+                clientHandler.sendMsg("The account is already in use.");
+                user = null;
+            }
+        } else {
+            clientHandler.sendMsg("The login/pass is not correct.");
+        }
+        return false;
     }
 
     private void readMessages() throws IOException {

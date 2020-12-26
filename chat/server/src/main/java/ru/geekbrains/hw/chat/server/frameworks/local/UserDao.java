@@ -21,9 +21,16 @@ class UserDao extends Dao {
     private static final int UPDATE_USER_NICK_NICK_PARAM = 1;
     private static final int UPDATE_USER_NICK_ID_PARAM = 2;
 
+    private static final String CREATE_USER = "INSERT INTO " + DBHelper.TABLE_USER + " (" + DBHelper.COLUMN_LOGIN + ", "
+            + DBHelper.COLUMN_NICK + ", " + DBHelper.COLUMN_PASS + ") VALUES (?, ?, ?)";
+    private static final int CREATE_USER_LOGIN_PARAM = 1;
+    private static final int CREATE_USER_NICK_PARAM = 2;
+    private static final int CREATE_USER_PASS_PARAM = 3;
+
     private PreparedStatement selectUserStatement;
     private PreparedStatement selectUserByNickStatement;
     private PreparedStatement updateUserNickStatement;
+    private PreparedStatement createUserStatement;
 
     public UserDao(LocalDataSource dataSource) {
         super(dataSource);
@@ -63,6 +70,19 @@ class UserDao extends Dao {
             PreparedStatement statement = getUpdateUserNickStatement();
             statement.setString(UPDATE_USER_NICK_NICK_PARAM, newNick);
             statement.setLong(UPDATE_USER_NICK_ID_PARAM, userId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean createUser(String login, String nick, String pass) {
+        try {
+            PreparedStatement statement = getCreateUserStatement();
+            statement.setString(CREATE_USER_LOGIN_PARAM, login);
+            statement.setString(CREATE_USER_NICK_PARAM, nick);
+            statement.setString(CREATE_USER_PASS_PARAM, pass);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,5 +130,12 @@ class UserDao extends Dao {
             updateUserNickStatement = getConnection().prepareStatement(UPDATE_USER_NICK);
         }
         return updateUserNickStatement;
+    }
+
+    private PreparedStatement getCreateUserStatement() throws SQLException {
+        if (createUserStatement == null) {
+            createUserStatement = getConnection().prepareStatement(CREATE_USER);
+        }
+        return createUserStatement;
     }
 }

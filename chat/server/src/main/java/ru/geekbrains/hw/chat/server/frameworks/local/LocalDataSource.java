@@ -29,6 +29,11 @@ public class LocalDataSource implements DataSource {
     }
 
     @Override
+    public synchronized User createUser(String login, String nick, String pass) {
+        return userDao.createUser(login, nick, pass) ? userDao.getUser(login, pass) : null;
+    }
+
+    @Override
     public synchronized boolean changeNick(long userId, String newNick) {
         if (userDao.getUserByNick(newNick) != null) {
             return false;

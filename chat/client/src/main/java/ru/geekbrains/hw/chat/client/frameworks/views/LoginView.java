@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.client.frameworks.views;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
@@ -34,6 +35,7 @@ public class LoginView implements Initializable, LoginContract.View {
         presenter.takeView(this);
     }
 
+    @Override
     public void signIn() {
         presenter.signIn();
     }
@@ -54,7 +56,17 @@ public class LoginView implements Initializable, LoginContract.View {
     }
 
     @Override
-    public void goToChatWindow() {
+    public void goToAuthWindow() {
         ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_CHAT);
+    }
+
+    @Override
+    public void goToRegWindow() {
+        ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_REG);
+    }
+
+    @Override
+    public void signJoin(ActionEvent actionEvent) {
+        presenter.signUp();
     }
 }

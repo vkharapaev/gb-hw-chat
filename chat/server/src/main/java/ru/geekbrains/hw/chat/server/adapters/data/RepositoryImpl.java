@@ -22,6 +22,11 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
+    public User createUser(String login, String nick, String pass) {
+        return dataSource.createUser(login, nick, pass);
+    }
+
+    @Override
     public boolean changeNick(long userId, String newNick) {
         return dataSource.changeNick(userId, newNick);
     }

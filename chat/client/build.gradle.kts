@@ -10,6 +10,8 @@ javafx {
 
 dependencies {
     implementation(project(":shared"))
+    implementation("io.reactivex.rxjava2:rxjava:2.2.20")
+    implementation("io.reactivex:rxjavafx:2.0.2")
     testImplementation("junit:junit:4.13.1")
 }
 

@@ -26,13 +26,6 @@
 
     </children>
 
-    <!--    <columnConstraints>-->
-    <!--        <ColumnConstraints/>-->
-    <!--        <ColumnConstraints/>-->
-    <!--        <ColumnConstraints/>-->
-    <!--        <ColumnConstraints percentWidth="30.0"/>-->
-    <!--    </columnConstraints>-->
-
     <rowConstraints>
         <RowConstraints percentHeight="15.0" />
         <RowConstraints />

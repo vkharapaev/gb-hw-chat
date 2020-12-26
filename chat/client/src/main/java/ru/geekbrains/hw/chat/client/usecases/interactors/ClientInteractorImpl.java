@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.client.usecases.interactors;
 
+import io.reactivex.Completable;
 import ru.geekbrains.hw.chat.client.usecases.Client;
 
 import java.io.IOException;
@@ -37,8 +38,8 @@ public class ClientInteractorImpl implements ClientInteractor {
     }
 
     @Override
-    public void sendMsg(String message) {
-        client.sendMsg(message);
+    public Completable sendMessage(String message) {
+        return Completable.fromRunnable(() -> client.sendMsg(message));
     }
 
     @Override
@@ -94,26 +95,32 @@ public class ClientInteractorImpl implements ClientInteractor {
     }
 
     @Override
-    public void signIn(String login, String pass) {
+    public Completable signIn(String login, String pass) {
+        return Completable.fromRunnable(() ->
+                sendMessage(login, String.format("/auth %s %s", login, pass)));
+    }
+
+    @Override
+    public Completable register(String login, String nick, String pass) {
+        return Completable.fromRunnable(() ->
+                sendMessage(login, String.format("/reg %s %s %s", login, nick, pass)));
+    }
+
+    private void sendMessage(String login, String message) {
         synchronized (companion) {
-            if (client.isAuthInProgress()) {
-                return;
+            if (client.isConnectionClosed()) {
+                start();
             }
-            client.startSignInTask(() -> {
-                if (client.isConnectionClosed()) {
-                    start();
+            try {
+                if (!client.isConnectionClosed()) {
+                    client.sendMsg(message);
+                    companion.setLogin(login);
+                } else {
+                    messageQueue.put("The server is not responding.");
                 }
-                try {
-                    if (!client.isConnectionClosed()) {
-                        client.sendMsg(String.format("/auth %s %s", login, pass));
-                        companion.setLogin(login);
-                    } else {
-                        messageQueue.put("The server is not responding.");
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

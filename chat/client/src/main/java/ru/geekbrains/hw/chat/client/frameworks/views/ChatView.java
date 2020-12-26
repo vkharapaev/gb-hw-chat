@@ -33,12 +33,7 @@ public class ChatView implements Initializable, ChatContract.View {
 
     @FXML
     private void sendAction() {
-        presenter.sendMessage();
-    }
-
-    @Override
-    public String getMessage() {
-        return messageTextField.getText();
+        presenter.sendMessage(messageTextField.getText());
     }
 
     @Override

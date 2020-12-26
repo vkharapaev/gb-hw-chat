@@ -6,13 +6,9 @@ public interface Client {
 
     String readMessage() throws IOException;
 
-    boolean isAuthInProgress();
-
     void sendMsg(String message);
 
     void start(Runnable startTask);
-
-    void startSignInTask(Runnable signInTask);
 
     void closeConnection();
 
