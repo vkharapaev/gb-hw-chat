@@ -15,6 +15,6 @@ public class RegContract {
     public interface Presenter extends BasePresenter<View> {
         void goBack();
 
-        void join(String login, String pass, String nick);
+        void register(String login, String pass, String nick);
     }
 }

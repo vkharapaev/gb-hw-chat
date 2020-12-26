@@ -57,7 +57,7 @@ public class RegView implements Initializable, RegContract.View {
     }
 
     @FXML
-    private void join() {
-        presenter.join(login.getText(), pass.getText(), nick.getText());
+    private void register() {
+        presenter.register(login.getText(), pass.getText(), nick.getText());
     }
 }

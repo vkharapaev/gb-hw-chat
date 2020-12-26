@@ -21,16 +21,16 @@
         </Text>
 
         <Label text="Nick:" GridPane.rowIndex="1"/>
-        <TextField fx:id="nick" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="nick" onAction="#register" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
         <Label text="Login:" GridPane.rowIndex="2"/>
-        <TextField fx:id="login" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="login" onAction="#register" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
         <Label text="Password:" GridPane.rowIndex="3"/>
-        <PasswordField fx:id="pass" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <PasswordField fx:id="pass" onAction="#register" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
         <HBox GridPane.columnIndex="1" GridPane.rowIndex="5" alignment="CENTER_RIGHT" spacing="10.0">
-            <Button text="Join" onAction="#join"/>
+            <Button text="Join" onAction="#register"/>
             <Button text="Back" onAction="#goBack" />
         </HBox>
 

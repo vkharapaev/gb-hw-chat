@@ -49,7 +49,7 @@ public class RegPresenter implements RegContract.Presenter {
     }
 
     @Override
-    public void join(String login, String pass, String nick) {
+    public void register(String login, String pass, String nick) {
 
         login = Util.nvl(login, "").trim();
         pass = Util.nvl(pass, "").trim();
