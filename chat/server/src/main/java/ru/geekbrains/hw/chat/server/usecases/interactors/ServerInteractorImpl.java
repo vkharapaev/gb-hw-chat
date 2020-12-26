@@ -1,6 +1,6 @@
 package ru.geekbrains.hw.chat.server.usecases.interactors;
 
-import ru.geekbrains.hw.chat.ChatMessages;
+import ru.geekbrains.hw.chat.ChatCommands;
 import ru.geekbrains.hw.chat.server.usecases.Repository;
 import ru.geekbrains.hw.chat.server.usecases.Server;
 
@@ -72,7 +72,7 @@ public class ServerInteractorImpl implements ServerInteractor {
 
     @Override
     public synchronized void broadcastClientsList() {
-        StringBuilder sb = new StringBuilder(ChatMessages.SERVER_MSG_CLIENTS);
+        StringBuilder sb = new StringBuilder(ChatCommands.SERVER_CLIENTS);
         for (ClientHandlerInteractor handler : clients) {
             sb.append(" ").append(handler.getName());
         }
