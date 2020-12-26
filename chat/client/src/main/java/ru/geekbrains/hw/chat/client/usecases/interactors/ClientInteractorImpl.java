@@ -9,16 +9,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ClientInteractorImpl implements ClientInteractor {
     private static final int HISTORY_LINES_COUNT = 100;
     private final BlockingQueue<String> messageQueue;
+    private final BlockingQueue<String> clientsMessageQueue;
     private final HistoryInteractor historyInteractor;
     private final Companion companion;
     private Client client;
 
-    public static final String MSG_END_AUTH = "//endauth";
-    public static final String MSG_END_CHAT = "//endchat";
-
     public ClientInteractorImpl(HistoryInteractor historyInteractor) {
         this.historyInteractor = historyInteractor;
         this.messageQueue = new LinkedBlockingQueue<>();
+        this.clientsMessageQueue = new LinkedBlockingQueue<>();
         this.companion = new Companion();
     }
 
@@ -30,6 +29,11 @@ public class ClientInteractorImpl implements ClientInteractor {
     @Override
     public BlockingQueue<String> getMessageQueue() {
         return messageQueue;
+    }
+
+    @Override
+    public BlockingQueue<String> getClientsMessageQueue() {
+        return clientsMessageQueue;
     }
 
     @Override
@@ -78,10 +82,14 @@ public class ClientInteractorImpl implements ClientInteractor {
 
     private void readMessages() throws IOException, InterruptedException {
         while (true) {
-            String strFromServer = client.readMessage();
-            System.out.printf("from server2: %s\n", strFromServer);
-            messageQueue.put(strFromServer);
-            historyInteractor.storeMessage(strFromServer);
+            String message = client.readMessage();
+            System.out.printf("from server2: %s\n", message);
+            if (message.startsWith("/clients")) {
+                clientsMessageQueue.put(message);
+                continue;
+            }
+            messageQueue.put(message);
+            historyInteractor.storeMessage(message);
         }
     }
 

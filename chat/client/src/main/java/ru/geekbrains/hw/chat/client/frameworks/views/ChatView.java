@@ -9,9 +9,13 @@ import ru.geekbrains.hw.chat.client.adapters.presenters.chat.ChatContract;
 import ru.geekbrains.hw.chat.client.adapters.presenters.chat.ChatPresenter;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChatView implements Initializable, ChatContract.View {
+
+    @FXML
+    private TextArea clientsTextArea;
 
     @FXML
     private TextArea chatTextArea;
@@ -48,7 +52,18 @@ public class ChatView implements Initializable, ChatContract.View {
     }
 
     @Override
+    public void showClients(List<String> clients) {
+        StringBuilder sb = new StringBuilder();
+        for (String nick : clients) {
+            sb.append(nick).append(", ");
+        }
+        sb.delete(sb.length()-2, sb.length());
+        clientsTextArea.setText(sb.toString());
+    }
+
+    @Override
     public void goToLoginWindow() {
         ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_LOGIN);
     }
+
 }
