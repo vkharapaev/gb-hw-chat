@@ -23,17 +23,15 @@ public class ChatView implements Initializable, ChatContract.View {
     @FXML
     private TextField messageTextField;
 
-    private ChatContract.Presenter presenter;
+    private final ChatContract.Presenter presenter;
+
+    public ChatView() {
+        this.presenter = new ChatPresenter();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        presenter = new ChatPresenter();
         presenter.takeView(this);
-    }
-
-    @FXML
-    private void sendAction() {
-        presenter.sendMessage(messageTextField.getText());
     }
 
     @Override
@@ -50,15 +48,20 @@ public class ChatView implements Initializable, ChatContract.View {
     public void showClients(List<String> clients) {
         StringBuilder sb = new StringBuilder();
         for (String nick : clients) {
-            sb.append(nick).append(", ");
+            sb.append(", ").append(nick);
         }
-        sb.delete(sb.length()-2, sb.length());
+        sb.delete(0, 2);
         clientsTextArea.setText(sb.toString());
     }
 
     @Override
     public void goToLoginWindow() {
         ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_LOGIN);
+    }
+
+    @FXML
+    private void sendAction() {
+        presenter.sendMessage(messageTextField.getText());
     }
 
 }

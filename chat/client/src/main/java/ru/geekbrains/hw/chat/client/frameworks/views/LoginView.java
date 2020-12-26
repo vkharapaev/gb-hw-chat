@@ -1,6 +1,5 @@
 package ru.geekbrains.hw.chat.client.frameworks.views;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.PasswordField;
@@ -32,22 +31,7 @@ public class LoginView implements Initializable, LoginContract.View {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        presenter.takeView(this);
-    }
-
-    @Override
-    public void signIn() {
-        presenter.signIn();
-    }
-
-    @Override
-    public String getLogin() {
-        return login.getText();
-    }
-
-    @Override
-    public String getPass() {
-        return pass.getText();
+        this.presenter.takeView(this);
     }
 
     @Override
@@ -65,8 +49,13 @@ public class LoginView implements Initializable, LoginContract.View {
         ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_REG);
     }
 
-    @Override
-    public void signJoin(ActionEvent actionEvent) {
+    @FXML
+    private void logIn() {
+        presenter.logIn(login.getText(), pass.getText());
+    }
+
+    @FXML
+    private void signUp() {
         presenter.signUp();
     }
 }

@@ -13,11 +13,11 @@ import ru.geekbrains.hw.chat.utils.Util;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
-    private LoginContract.View view;
     private final ClientInteractor clientInteractor;
+    private final CompositeDisposable disposables;
+    private LoginContract.View view;
     private MessageQueue messageQueue;
     private Disposable signInDisposable;
-    private final CompositeDisposable disposables;
 
     public LoginPresenter() {
         this.clientInteractor = ClientApp.getInstance().getClient();
@@ -43,9 +43,9 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void signIn() {
-        String login = Util.nvl(view.getLogin(), "").trim();
-        String pass = Util.nvl(view.getPass(), "").trim();
+    public void logIn(String login, String pass) {
+        login = Util.nvl(login, "").trim();
+        pass = Util.nvl(pass, "").trim();
 
         if (login.isEmpty() || pass.isEmpty()) {
             view.showError("Please, enter a login and password");

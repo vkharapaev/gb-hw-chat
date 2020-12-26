@@ -7,11 +7,11 @@ import java.sql.*;
 
 public class LocalDataSource implements DataSource {
 
-    private Connection connection;
     private final UserDao userDao;
+    private Connection connection;
 
     public LocalDataSource() {
-        userDao = new UserDao(this);
+        this.userDao = new UserDao(this);
     }
 
     @Override

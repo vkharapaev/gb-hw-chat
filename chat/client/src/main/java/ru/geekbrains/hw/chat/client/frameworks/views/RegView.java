@@ -51,11 +51,13 @@ public class RegView implements Initializable, RegContract.View {
         ClientApp.getInstance().switchToWindow(ClientApp.LAYOUT_LOGIN);
     }
 
-    public void goBack() {
+    @FXML
+    private void goBack() {
         presenter.goBack();
     }
 
-    public void join() {
+    @FXML
+    private void join() {
         presenter.join(login.getText(), pass.getText(), nick.getText());
     }
 }

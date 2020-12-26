@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.server.usecases.interactors;
 
+import ru.geekbrains.hw.chat.ChatMessages;
 import ru.geekbrains.hw.chat.server.entities.User;
 import ru.geekbrains.hw.chat.server.usecases.ClientHandler;
 
@@ -59,7 +60,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
         clientHandler.setTimer();
         while (true) {
             String message = clientHandler.readMessage();
-            if (message.startsWith("/auth")) {
+            if (message.startsWith(ChatMessages.CLIENT_MSG_AUTH)) {
                 String[] parts = message.split("\\s", 3);
                 if (parts.length == 3) {
                     user = serverInteractor.getUserRepository().getUser(parts[1], parts[2]);
@@ -67,7 +68,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
                 if (checkClient()) {
                     return;
                 }
-            } else if (message.startsWith("/reg")) {
+            } else if (message.startsWith(ChatMessages.CLIENT_MSG_REG)) {
                 String[] parts = message.split("\\s", 4);
                 if (parts.length == 4) {
                     user = serverInteractor.getUserRepository().createUser(parts[1], parts[2], parts[3]);
@@ -82,7 +83,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
     private boolean checkClient() {
         if (user != null) {
             if (serverInteractor.subscribe(this, user.getNick())) {
-                clientHandler.sendMsg("/authok " + user.getNick());
+                clientHandler.sendMsg(ChatMessages.SERVER_MSG_AUTH_OK + " " + user.getNick());
                 serverInteractor.broadcastClientsList();
                 serverInteractor.broadcast(user.getNick() + " entered the chat");
                 clientHandler.cancelTimer();
@@ -102,16 +103,14 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
             String message = clientHandler.readMessage();
             System.out.printf("from %s: %s\n", user.getNick(), message);
             if (message.startsWith("/")) {
-                if (message.equals("/end")) {
+                if (message.equals(ChatMessages.CLIENT_MSG_END)) {
                     return;
-                }
-                if (message.startsWith("/w ")) {
+                } else if (message.startsWith(ChatMessages.CLIENT_MSG_PRIVATE_MSG + " ")) {
                     String[] parts = message.split("\\s", 3);
                     if (parts.length == 3) {
                         serverInteractor.sendMsgToClient(this, parts[1], parts[2]);
                     }
-                }
-                if (message.startsWith("/cn ")) {
+                } else if (message.startsWith(ChatMessages.CLIENT_MSG_CHANGE_NICK + " ")) {
                     String[] parts = message.split("\\s", 2);
                     if (parts.length == 2 && !parts[1].isEmpty()) {
                         changeNick(parts[1]);

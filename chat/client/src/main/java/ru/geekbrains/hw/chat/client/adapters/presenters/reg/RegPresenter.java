@@ -13,10 +13,10 @@ import ru.geekbrains.hw.chat.utils.Util;
 
 public class RegPresenter implements RegContract.Presenter {
 
-    private RegContract.View view;
     private final ClientInteractor clientInteractor;
-    private MessageQueue messageQueue;
     private final CompositeDisposable disposables;
+    private RegContract.View view;
+    private MessageQueue messageQueue;
     private Disposable regDisposable;
 
     public RegPresenter() {

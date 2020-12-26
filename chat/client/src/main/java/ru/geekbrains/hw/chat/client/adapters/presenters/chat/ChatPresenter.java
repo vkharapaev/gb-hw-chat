@@ -13,12 +13,12 @@ import ru.geekbrains.hw.chat.client.utils.MessageQueue;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
-    private ChatContract.View view;
     private final ClientInteractor clientInteractor;
-    private MessageQueue messageQueue;
-    private MessageQueue clientsMessageQueue;
     private final ClientListInteractor clientListInteractor;
     private final CompositeDisposable disposables;
+    private ChatContract.View view;
+    private MessageQueue messageQueue;
+    private MessageQueue clientsMessageQueue;
 
     public ChatPresenter() {
         this.clientInteractor = ClientApp.getInstance().getClient();
@@ -45,18 +45,11 @@ public class ChatPresenter implements ChatContract.Presenter {
         messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
         messageQueue.start(message -> {
             if (message.startsWith(ClientInteractorImpl.MSG_END_CHAT)) {
-                onClose();
+                close();
             } else {
                 Platform.runLater(() -> view.appendToChat(message + "\n"));
             }
         });
-    }
-
-    private void onClose() {
-        disposables.clear();
-        messageQueue.stop();
-        clientsMessageQueue.stop();
-        Platform.runLater(() -> view.goToLoginWindow());
     }
 
     @Override
@@ -68,6 +61,13 @@ public class ChatPresenter implements ChatContract.Presenter {
                     .subscribe(() -> view.clearMessageField());
             disposables.add(disposable);
         }
+    }
+
+    private void close() {
+        disposables.clear();
+        messageQueue.stop();
+        clientsMessageQueue.stop();
+        Platform.runLater(() -> view.goToLoginWindow());
     }
 
 }

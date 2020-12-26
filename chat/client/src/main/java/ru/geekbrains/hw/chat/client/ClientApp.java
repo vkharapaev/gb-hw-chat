@@ -24,7 +24,7 @@ import java.util.List;
 public class ClientApp extends Application {
 
     public static final String LAYOUT_CHAT = "layouts/chat_layout.fxml";
-    public static final String LAYOUT_LOGIN = "layouts/aut_layout.fxml";
+    public static final String LAYOUT_LOGIN = "layouts/auth_layout.fxml";
     public static final String LAYOUT_REG = "layouts/reg_layout.fxml";;
 
     private static final int WINDOW_WIDTH = 400;

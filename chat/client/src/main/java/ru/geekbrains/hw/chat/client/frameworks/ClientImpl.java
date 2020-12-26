@@ -10,11 +10,11 @@ import java.net.Socket;
 
 public class ClientImpl implements Client {
 
+    private final String host;
+    private final int port;
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
-    private final String host;
-    private final int port;
 
     public ClientImpl(ClientInteractor interactor, String host, int port) {
         this.host = host;

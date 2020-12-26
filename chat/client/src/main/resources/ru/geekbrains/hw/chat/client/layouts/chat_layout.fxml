@@ -23,7 +23,6 @@
         <TextField fx:id="messageTextField" GridPane.rowIndex="2" onAction="#sendAction" GridPane.hgrow="ALWAYS"/>
         <Button onAction="#sendAction" GridPane.rowIndex="2" text="Send" GridPane.columnIndex="1"
                 GridPane.hgrow="NEVER"/>
-
     </children>
 
     <rowConstraints>

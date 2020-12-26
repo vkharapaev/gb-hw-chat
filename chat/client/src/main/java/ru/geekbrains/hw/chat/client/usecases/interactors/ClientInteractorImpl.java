@@ -1,6 +1,7 @@
 package ru.geekbrains.hw.chat.client.usecases.interactors;
 
 import io.reactivex.Completable;
+import ru.geekbrains.hw.chat.ChatMessages;
 import ru.geekbrains.hw.chat.client.usecases.Client;
 
 import java.io.IOException;
@@ -8,10 +9,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClientInteractorImpl implements ClientInteractor {
+
     private static final int HISTORY_LINES_COUNT = 100;
+    private final HistoryInteractor historyInteractor;
     private final BlockingQueue<String> messageQueue;
     private final BlockingQueue<String> clientsMessageQueue;
-    private final HistoryInteractor historyInteractor;
     private final Companion companion;
     private Client client;
 
@@ -64,13 +66,13 @@ public class ClientInteractorImpl implements ClientInteractor {
 
     private void authenticate() throws IOException, InterruptedException {
         while (true) {
-            String strFromServer = client.readMessage();
-            if (strFromServer.startsWith("/authok")) {
+            String message = client.readMessage();
+            if (message.startsWith(ChatMessages.SERVER_MSG_AUTH_OK)) {
                 messageQueue.put(MSG_END_AUTH);
                 break;
             }
-            System.out.printf("from server: %s\n", strFromServer);
-            messageQueue.put(strFromServer);
+            System.out.printf("from server: %s\n", message);
+            messageQueue.put(message);
         }
     }
 
@@ -85,7 +87,7 @@ public class ClientInteractorImpl implements ClientInteractor {
         while (true) {
             String message = client.readMessage();
             System.out.printf("from server2: %s\n", message);
-            if (message.startsWith("/clients")) {
+            if (message.startsWith(ChatMessages.SERVER_MSG_CLIENTS)) {
                 clientsMessageQueue.put(message);
                 continue;
             }
@@ -97,13 +99,13 @@ public class ClientInteractorImpl implements ClientInteractor {
     @Override
     public Completable signIn(String login, String pass) {
         return Completable.fromRunnable(() ->
-                sendMessage(login, String.format("/auth %s %s", login, pass)));
+                sendMessage(login, String.format(ChatMessages.CLIENT_MSG_TEMPLATE_AUTH, login, pass)));
     }
 
     @Override
     public Completable register(String login, String nick, String pass) {
         return Completable.fromRunnable(() ->
-                sendMessage(login, String.format("/reg %s %s %s", login, nick, pass)));
+                sendMessage(login, String.format(ChatMessages.CLIENT_MSG_TEMPLATE_REG, login, nick, pass)));
     }
 
     private void sendMessage(String login, String message) {
