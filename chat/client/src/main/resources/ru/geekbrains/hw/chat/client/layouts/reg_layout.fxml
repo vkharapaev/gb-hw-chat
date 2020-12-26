@@ -20,12 +20,11 @@
             </font>
         </Text>
 
-        <Label text="Login:" GridPane.rowIndex="1"/>
-        <TextField fx:id="login" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Nick:" GridPane.rowIndex="1"/>
+        <TextField fx:id="nick" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-
-        <Label text="Nick:" GridPane.rowIndex="2"/>
-        <TextField fx:id="nick" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="Login:" GridPane.rowIndex="2"/>
+        <TextField fx:id="login" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
         <Label text="Password:" GridPane.rowIndex="3"/>
         <PasswordField fx:id="pass" onAction="#join" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
