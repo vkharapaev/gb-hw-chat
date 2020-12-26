@@ -15,6 +15,7 @@ public class ClientListInteractor {
         if (clientsMessage != null && clientsMessage.startsWith("/clients")) {
             String[] nicks = clientsMessage.split("\\s");
             nickList = Arrays.asList(Arrays.copyOfRange(nicks, 1, nicks.length));
+            nickList.sort(String.CASE_INSENSITIVE_ORDER);
         }
     }
 

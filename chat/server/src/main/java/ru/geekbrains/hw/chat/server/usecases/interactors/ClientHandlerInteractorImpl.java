@@ -128,6 +128,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
                 serverInteractor.getUserRepository().changeNick(user.getId(), newNick)) {
             serverInteractor.broadcast(user.getNick() + " changed nick to " + newNick);
             user.setNick(newNick);
+            serverInteractor.broadcastClientsList();
         }
     }
 }
