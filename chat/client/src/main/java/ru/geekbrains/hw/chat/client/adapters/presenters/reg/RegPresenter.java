@@ -56,7 +56,7 @@ public class RegPresenter implements RegContract.Presenter {
         nick = Util.nvl(nick, "").trim();
 
         if (login.isEmpty() || pass.isEmpty() || nick.isEmpty()) {
-            view.showError("Please, enter a login, nick and password");
+            view.showError("Please, enter a nick, login and password");
             return;
         }
 
