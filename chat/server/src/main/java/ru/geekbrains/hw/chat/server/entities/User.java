@@ -14,4 +14,3 @@ public class User {
     @NonNull
     private String nick;
 }
-
