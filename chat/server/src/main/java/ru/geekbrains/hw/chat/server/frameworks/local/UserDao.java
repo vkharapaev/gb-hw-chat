@@ -91,12 +91,12 @@ class UserDao extends Dao {
     }
 
     private User mapUser(ResultSet userResultSet) throws SQLException {
-        User user = new User();
-        user.setId(userResultSet.getLong(DBHelper.COLUMN_USER_ID));
-        user.setLogin(userResultSet.getString(DBHelper.COLUMN_LOGIN));
-        user.setPass(userResultSet.getString(DBHelper.COLUMN_PASS));
-        user.setNick(userResultSet.getString(DBHelper.COLUMN_NICK));
-        return user;
+        return User.builder()
+                .id(userResultSet.getLong(DBHelper.COLUMN_USER_ID))
+                .login(userResultSet.getString(DBHelper.COLUMN_LOGIN))
+                .pass(userResultSet.getString(DBHelper.COLUMN_PASS))
+                .nick(userResultSet.getString(DBHelper.COLUMN_NICK))
+                .build();
     }
 
     void close() throws SQLException {
