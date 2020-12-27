@@ -2,25 +2,26 @@ package ru.geekbrains.hw.chat.client.adapters.presenters.login;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
-import javafx.application.Platform;
-import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
-import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
+import ru.geekbrains.hw.chat.client.utils.JavaFx;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
+import ru.geekbrains.hw.chat.client.utils.Schedulers;
 import ru.geekbrains.hw.chat.utils.Util;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
+    private final JavaFx javaFx;
     private final ClientInteractor clientInteractor;
+    private final Schedulers schedulers;
     private final CompositeDisposable disposables;
     private LoginContract.View view;
     private MessageQueue messageQueue;
     private Disposable signInDisposable;
 
-    public LoginPresenter() {
-        this.clientInteractor = ClientApp.getInstance().getClient();
+    public LoginPresenter(ClientInteractor clientInteractor, JavaFx javaFx, Schedulers schedulers) {
+        this.javaFx = javaFx;
+        this.clientInteractor = clientInteractor;
+        this.schedulers = schedulers;
         this.disposables = new CompositeDisposable();
     }
 
@@ -31,13 +32,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private void readMessages() {
-        messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
+        messageQueue = clientInteractor.getMessageQueue();
         messageQueue.start(message -> {
-            if (message.startsWith(ClientInteractorImpl.MSG_END_AUTH)) {
+            if (message.startsWith(ClientInteractor.MSG_END_AUTH)) {
                 close();
-                Platform.runLater(() -> view.goToAuthWindow());
+                javaFx.runLater(() -> view.goToAuthWindow());
             } else {
-                Platform.runLater(() -> view.showError(message));
+                javaFx.runLater(() -> view.showError(message));
             }
         });
     }
@@ -56,8 +57,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         if (signInDisposable == null || signInDisposable.isDisposed()) {
             signInDisposable = clientInteractor.signIn(login, pass)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(JavaFxScheduler.platform())
+                    .subscribeOn(schedulers.getIoScheduler())
+                    .observeOn(schedulers.getJavaFxScheduler())
                     .subscribe();
             disposables.add(signInDisposable);
         }

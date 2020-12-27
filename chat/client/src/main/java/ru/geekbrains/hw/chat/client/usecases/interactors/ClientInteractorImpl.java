@@ -3,6 +3,8 @@ package ru.geekbrains.hw.chat.client.usecases.interactors;
 import io.reactivex.Completable;
 import ru.geekbrains.hw.chat.ChatCommands;
 import ru.geekbrains.hw.chat.client.usecases.Client;
+import ru.geekbrains.hw.chat.client.utils.MessageQueue;
+import ru.geekbrains.hw.chat.client.utils.MessageQueueImpl;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -30,13 +32,13 @@ public class ClientInteractorImpl implements ClientInteractor {
     }
 
     @Override
-    public BlockingQueue<String> getMessageQueue() {
-        return messageQueue;
+    public MessageQueue getMessageQueue() {
+        return new MessageQueueImpl(messageQueue);
     }
 
     @Override
-    public BlockingQueue<String> getClientsMessageQueue() {
-        return clientsMessageQueue;
+    public MessageQueue getClientsMessageQueue() {
+        return new MessageQueueImpl(clientsMessageQueue);
     }
 
     @Override

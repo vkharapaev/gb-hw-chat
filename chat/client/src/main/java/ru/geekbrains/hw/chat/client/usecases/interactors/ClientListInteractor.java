@@ -7,15 +7,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class ClientListInteractor {
-    List<String> nickList;
+    private List<String> nickList;
 
     public ClientListInteractor() {
         nickList = Collections.emptyList();
     }
 
-    public void fillList(String clientsMessage) {
-        if (clientsMessage != null && clientsMessage.startsWith(ChatCommands.SERVER_CLIENTS)) {
-            String[] nicks = clientsMessage.split("\\s");
+    public void fillList(String clientsCommand) {
+        if (clientsCommand != null && clientsCommand.startsWith(ChatCommands.SERVER_CLIENTS)) {
+            String[] nicks = clientsCommand.split("\\s");
             nickList = Arrays.asList(Arrays.copyOfRange(nicks, 1, nicks.length));
             nickList.sort(String.CASE_INSENSITIVE_ORDER);
         }

@@ -10,13 +10,21 @@ javafx {
 
 dependencies {
     implementation(project(":shared"))
+
     implementation("io.reactivex.rxjava2:rxjava:2.2.20")
     implementation("io.reactivex:rxjavafx:2.0.2")
-    testImplementation("junit:junit:4.13.1")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
 
 application {
     mainClass.set("ru.geekbrains.hw.chat.client.ClientApp")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 description = "client"

@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.adapters.presenters.chat.ChatContract;
 import ru.geekbrains.hw.chat.client.adapters.presenters.chat.ChatPresenter;
+import ru.geekbrains.hw.chat.client.utils.JavaFxImpl;
+import ru.geekbrains.hw.chat.client.utils.SchedulersImpl;
 
 import java.net.URL;
 import java.util.List;
@@ -26,7 +28,7 @@ public class ChatView implements Initializable, ChatContract.View {
     private final ChatContract.Presenter presenter;
 
     public ChatView() {
-        this.presenter = new ChatPresenter();
+        this.presenter = new ChatPresenter(ClientApp.getInstance().getClient(), new JavaFxImpl(), new SchedulersImpl());
     }
 
     @Override

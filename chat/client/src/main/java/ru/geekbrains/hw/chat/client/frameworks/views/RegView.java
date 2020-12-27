@@ -8,6 +8,8 @@ import javafx.scene.text.Text;
 import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.adapters.presenters.reg.RegContract;
 import ru.geekbrains.hw.chat.client.adapters.presenters.reg.RegPresenter;
+import ru.geekbrains.hw.chat.client.utils.JavaFxImpl;
+import ru.geekbrains.hw.chat.client.utils.SchedulersImpl;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,7 +30,7 @@ public class RegView implements Initializable, RegContract.View {
     private final RegPresenter presenter;
 
     public RegView() {
-        presenter = new RegPresenter();
+        presenter = new RegPresenter(ClientApp.getInstance().getClient(), new JavaFxImpl(), new SchedulersImpl());
     }
 
     @Override

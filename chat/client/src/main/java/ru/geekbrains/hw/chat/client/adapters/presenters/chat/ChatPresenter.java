@@ -2,26 +2,28 @@ package ru.geekbrains.hw.chat.client.adapters.presenters.chat;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
-import javafx.application.Platform;
-import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientListInteractor;
+import ru.geekbrains.hw.chat.client.utils.JavaFx;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
+import ru.geekbrains.hw.chat.client.utils.Schedulers;
 
 public class ChatPresenter implements ChatContract.Presenter {
 
     private final ClientInteractor clientInteractor;
+    private final JavaFx javaFx;
+    private final Schedulers schedulers;
     private final ClientListInteractor clientListInteractor;
     private final CompositeDisposable disposables;
     private ChatContract.View view;
     private MessageQueue messageQueue;
     private MessageQueue clientsMessageQueue;
 
-    public ChatPresenter() {
-        this.clientInteractor = ClientApp.getInstance().getClient();
+    public ChatPresenter(ClientInteractor clientInteractor, JavaFx javaFx, Schedulers schedulers) {
+        this.clientInteractor = clientInteractor;
+        this.javaFx = javaFx;
+        this.schedulers = schedulers;
         this.clientListInteractor = new ClientListInteractor();
         this.disposables = new CompositeDisposable();
     }
@@ -34,20 +36,20 @@ public class ChatPresenter implements ChatContract.Presenter {
     }
 
     private void readClients() {
-        clientsMessageQueue = new MessageQueue(clientInteractor.getClientsMessageQueue());
-        clientsMessageQueue.start(clientMessage -> Platform.runLater(() -> {
+        clientsMessageQueue = clientInteractor.getClientsMessageQueue();
+        clientsMessageQueue.start(clientMessage -> javaFx.runLater(() -> {
             clientListInteractor.fillList(clientMessage);
             view.showClients(clientListInteractor.getNickList());
         }));
     }
 
     private void readMessages() {
-        messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
+        messageQueue = clientInteractor.getMessageQueue();
         messageQueue.start(message -> {
             if (message.startsWith(ClientInteractorImpl.MSG_END_CHAT)) {
                 close();
             } else {
-                Platform.runLater(() -> view.appendToChat(message + "\n"));
+                javaFx.runLater(() -> view.appendToChat(message + "\n"));
             }
         });
     }
@@ -56,8 +58,8 @@ public class ChatPresenter implements ChatContract.Presenter {
     public void sendMessage(String message) {
         if (message != null && !message.isEmpty()) {
             Disposable disposable = clientInteractor.sendMessage(message)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(JavaFxScheduler.platform())
+                    .subscribeOn(schedulers.getIoScheduler())
+                    .observeOn(schedulers.getJavaFxScheduler())
                     .subscribe(() -> view.clearMessageField());
             disposables.add(disposable);
         }
@@ -67,7 +69,7 @@ public class ChatPresenter implements ChatContract.Presenter {
         disposables.clear();
         messageQueue.stop();
         clientsMessageQueue.stop();
-        Platform.runLater(() -> view.goToLoginWindow());
+        javaFx.runLater(() -> view.goToLoginWindow());
     }
 
 }
