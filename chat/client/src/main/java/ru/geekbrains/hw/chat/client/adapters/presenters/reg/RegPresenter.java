@@ -65,9 +65,7 @@ public class RegPresenter implements RegContract.Presenter {
         view.showError("Connecting...");
 
         if (regDisposable == null || regDisposable.isDisposed()) {
-            regDisposable = clientInteractor.register(login, nick, pass)
-                    .subscribeOn(schedulers.getIoScheduler())
-                    .observeOn(schedulers.getJavaFxScheduler())
+            regDisposable = schedulers.subscribeOnIoObserveOnJavaFx(clientInteractor.register(login, nick, pass))
                     .subscribe();
             disposables.add(regDisposable);
         }

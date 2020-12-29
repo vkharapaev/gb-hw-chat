@@ -1,9 +1,7 @@
 package ru.geekbrains.hw.chat.client.utils;
 
-import io.reactivex.Scheduler;
+import io.reactivex.Completable;
 
 public interface Schedulers {
-    Scheduler getIoScheduler();
-
-    Scheduler getJavaFxScheduler();
+    Completable subscribeOnIoObserveOnJavaFx(Completable completable);
 }

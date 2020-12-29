@@ -4,7 +4,7 @@ import io.reactivex.Completable;
 import ru.geekbrains.hw.chat.ChatCommands;
 import ru.geekbrains.hw.chat.client.usecases.Client;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
-import ru.geekbrains.hw.chat.client.utils.MessageQueueImpl;
+import ru.geekbrains.hw.chat.client.utils.MessageQueueFactory;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -13,13 +13,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ClientInteractorImpl implements ClientInteractor {
 
     private static final int HISTORY_LINES_COUNT = 100;
+    private final MessageQueueFactory messageQueueFactory;
     private final HistoryInteractor historyInteractor;
     private final BlockingQueue<String> messageQueue;
     private final BlockingQueue<String> clientsMessageQueue;
     private final Companion companion;
     private Client client;
 
-    public ClientInteractorImpl(HistoryInteractor historyInteractor) {
+    public ClientInteractorImpl(MessageQueueFactory messageQueueFactory, HistoryInteractor historyInteractor) {
+        this.messageQueueFactory = messageQueueFactory;
         this.historyInteractor = historyInteractor;
         this.messageQueue = new LinkedBlockingQueue<>();
         this.clientsMessageQueue = new LinkedBlockingQueue<>();
@@ -33,12 +35,12 @@ public class ClientInteractorImpl implements ClientInteractor {
 
     @Override
     public MessageQueue getMessageQueue() {
-        return new MessageQueueImpl(messageQueue);
+        return messageQueueFactory.create(messageQueue);
     }
 
     @Override
     public MessageQueue getClientsMessageQueue() {
-        return new MessageQueueImpl(clientsMessageQueue);
+        return messageQueueFactory.create(clientsMessageQueue);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class ClientInteractorImpl implements ClientInteractor {
                 client.closeConnection();
             } finally {
                 try {
-                    messageQueue.put(MSG_END_CHAT);
+                    messageQueue.put(MSG_END_CONNECTION);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -7,7 +7,7 @@ import ru.geekbrains.hw.chat.client.utils.MessageQueue;
 public interface ClientInteractor {
 
     String MSG_END_AUTH = "//endauth";
-    String MSG_END_CHAT = "//endchat";
+    String MSG_END_CONNECTION = "//endconnection";
 
     void setClient(Client client);
 

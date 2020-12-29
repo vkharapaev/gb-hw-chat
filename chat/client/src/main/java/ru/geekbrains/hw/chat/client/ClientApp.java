@@ -13,6 +13,7 @@ import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractorImpl;
 import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractor;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
+import ru.geekbrains.hw.chat.client.utils.MessageQueueFactoryImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +26,8 @@ public class ClientApp extends Application {
 
     public static final String LAYOUT_CHAT = "layouts/chat_layout.fxml";
     public static final String LAYOUT_LOGIN = "layouts/auth_layout.fxml";
-    public static final String LAYOUT_REG = "layouts/reg_layout.fxml";;
+    public static final String LAYOUT_REG = "layouts/reg_layout.fxml";
+    ;
 
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 600;
@@ -56,7 +58,7 @@ public class ClientApp extends Application {
         List<String> args = getParameters().getUnnamed();
         HistoryInteractor historyInteractor =
                 new HistoryInteractorImpl(new HistoryRepositoryImpl(new HistoryDataSourceImpl()));
-        clientInteractor = new ClientInteractorImpl(historyInteractor);
+        clientInteractor = new ClientInteractorImpl(new MessageQueueFactoryImpl(), historyInteractor);
         client = args.size() != 2 ?
                 new ClientImpl(clientInteractor, DEFAULT_HOST, DEFAULT_PORT) :
                 new ClientImpl(clientInteractor, args.get(0), Integer.parseInt(args.get(1)));

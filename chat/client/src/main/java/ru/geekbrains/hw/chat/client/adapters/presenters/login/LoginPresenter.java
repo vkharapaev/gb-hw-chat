@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.client.adapters.presenters.login;
 
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
@@ -56,9 +57,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         view.showError("Connecting...");
 
         if (signInDisposable == null || signInDisposable.isDisposed()) {
-            signInDisposable = clientInteractor.signIn(login, pass)
-                    .subscribeOn(schedulers.getIoScheduler())
-                    .observeOn(schedulers.getJavaFxScheduler())
+            signInDisposable = schedulers.subscribeOnIoObserveOnJavaFx(clientInteractor.signIn(login, pass))
                     .subscribe();
             disposables.add(signInDisposable);
         }

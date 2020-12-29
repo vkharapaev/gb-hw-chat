@@ -35,6 +35,17 @@ public class ChatPresenter implements ChatContract.Presenter {
         readClients();
     }
 
+    private void readMessages() {
+        messageQueue = clientInteractor.getMessageQueue();
+        messageQueue.start(message -> {
+            if (message.startsWith(ClientInteractorImpl.MSG_END_CONNECTION)) {
+                close();
+            } else {
+                javaFx.runLater(() -> view.appendToChat(message + "\n"));
+            }
+        });
+    }
+
     private void readClients() {
         clientsMessageQueue = clientInteractor.getClientsMessageQueue();
         clientsMessageQueue.start(clientMessage -> javaFx.runLater(() -> {
@@ -43,23 +54,10 @@ public class ChatPresenter implements ChatContract.Presenter {
         }));
     }
 
-    private void readMessages() {
-        messageQueue = clientInteractor.getMessageQueue();
-        messageQueue.start(message -> {
-            if (message.startsWith(ClientInteractorImpl.MSG_END_CHAT)) {
-                close();
-            } else {
-                javaFx.runLater(() -> view.appendToChat(message + "\n"));
-            }
-        });
-    }
-
     @Override
     public void sendMessage(String message) {
         if (message != null && !message.isEmpty()) {
-            Disposable disposable = clientInteractor.sendMessage(message)
-                    .subscribeOn(schedulers.getIoScheduler())
-                    .observeOn(schedulers.getJavaFxScheduler())
+            Disposable disposable = schedulers.subscribeOnIoObserveOnJavaFx(clientInteractor.sendMessage(message))
                     .subscribe(() -> view.clearMessageField());
             disposables.add(disposable);
         }
