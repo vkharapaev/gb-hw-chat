@@ -85,8 +85,8 @@ public class ServerInteractorImpl implements ServerInteractor {
     }
 
     @Override
-    public synchronized boolean subscribe(ClientHandlerInteractor handler, String nick) {
-        if (isNickBusy(nick)) {
+    public synchronized boolean subscribe(ClientHandlerInteractor handler) {
+        if (isNickBusy(handler.getName())) {
             return false;
         }
         clients.add(handler);

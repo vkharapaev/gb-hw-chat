@@ -82,7 +82,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
 
     private boolean checkClient() {
         if (user != null) {
-            if (serverInteractor.subscribe(this, user.getNick())) {
+            if (serverInteractor.subscribe(this)) {
                 clientHandler.sendMsg(ChatCommands.SERVER_AUTH_OK + " " + user.getNick());
                 serverInteractor.broadcastClientsList();
                 serverInteractor.broadcast(user.getNick() + " entered the chat");
