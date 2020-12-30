@@ -8,9 +8,11 @@ import java.sql.*;
 public class LocalDataSource implements DataSource {
 
     private final UserDao userDao;
+    private final String dbName;
     private Connection connection;
 
-    public LocalDataSource() {
+    public LocalDataSource(String dbName) {
+        this.dbName = dbName;
         this.userDao = new UserDao(this);
     }
 
@@ -56,7 +58,7 @@ public class LocalDataSource implements DataSource {
 
     private Connection connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        return DriverManager.getConnection("jdbc:sqlite:main.db");
+        return DriverManager.getConnection("jdbc:sqlite:" + dbName);
     }
 
     public Connection getConnection() {
