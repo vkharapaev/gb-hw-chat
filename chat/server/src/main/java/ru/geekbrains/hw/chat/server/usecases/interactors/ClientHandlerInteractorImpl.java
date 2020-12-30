@@ -18,7 +18,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
 
     @Override
     public String getName() {
-        return user.getNick();
+        return user == null ? null : user.getNick();
     }
 
     @Override
