@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.server.usecases.interactors;
 
+import org.apache.log4j.Logger;
 import ru.geekbrains.hw.chat.ChatCommands;
 import ru.geekbrains.hw.chat.server.usecases.Repository;
 import ru.geekbrains.hw.chat.server.usecases.Server;
@@ -9,6 +10,7 @@ import java.util.List;
 
 public class ServerInteractorImpl implements ServerInteractor {
 
+    private static final Logger log = Logger.getLogger(ServerInteractorImpl.class.getName());
     private final List<ClientHandlerInteractor> clients;
     private Server server;
     private final Repository repository;
@@ -26,9 +28,11 @@ public class ServerInteractorImpl implements ServerInteractor {
     @Override
     public void start() {
         try {
+            log.debug("Server started");
             repository.start();
             while (true) {
-                System.out.printf("The server is waiting for connections on %d port...\n", server.getLocalPort());
+                log.debug(String.format("The server is waiting for connections on %d port...",
+                        server.getLocalPort()));
                 server.waitForClient();
             }
         } finally {
@@ -64,6 +68,7 @@ public class ServerInteractorImpl implements ServerInteractor {
             if (handler.getName().equals(toNick)) {
                 handler.sendMsg("from " + from.getName() + ": " + message);
                 from.sendMsg("to " + toNick + ": " + message);
+                log.debug(String.format("User `%s' sent private message `%s' to `%s'", from.getName(), message, toNick));
                 return;
             }
         }
@@ -81,6 +86,7 @@ public class ServerInteractorImpl implements ServerInteractor {
 
     @Override
     public synchronized void unsubscribe(ClientHandlerInteractor handler) {
+        log.debug(String.format("User `%s' disconnected", handler.getName()));
         clients.remove(handler);
     }
 
@@ -90,6 +96,7 @@ public class ServerInteractorImpl implements ServerInteractor {
             return false;
         }
         clients.add(handler);
+        log.debug(String.format("User `%s' connected", handler.getName()));
         return true;
     }
 }

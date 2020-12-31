@@ -5,11 +5,13 @@ plugins {
 
 application {
     mainClass.set("ru.geekbrains.hw.chat.server.ServerApp")
+    applicationDefaultJvmArgs = listOf("-Dlog4j.configuration=file:log4j.xml")
 }
 
 dependencies {
     implementation(project(":shared"))
     implementation("org.xerial:sqlite-jdbc:3.34.0")
+    implementation("log4j:log4j:1.2.17")
 
     compileOnly("org.projectlombok:lombok:1.18.16")
     annotationProcessor("org.projectlombok:lombok:1.18.16")
