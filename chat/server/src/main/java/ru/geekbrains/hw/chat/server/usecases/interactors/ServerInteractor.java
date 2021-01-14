@@ -10,7 +10,7 @@ public interface ServerInteractor {
 
     void broadcast(String message);
 
-    boolean subscribe(ClientHandlerInteractor handler, String nick);
+    boolean subscribe(ClientHandlerInteractor handler);
 
     void sendMsgToClient(ClientHandlerInteractor from, String toNick, String message);
 

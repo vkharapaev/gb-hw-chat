@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.server.usecases.interactors;
 
+import org.apache.log4j.Logger;
 import ru.geekbrains.hw.chat.ChatCommands;
 import ru.geekbrains.hw.chat.server.entities.User;
 import ru.geekbrains.hw.chat.server.usecases.ClientHandler;
@@ -8,6 +9,7 @@ import java.io.IOException;
 
 public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
 
+    private static final Logger log = Logger.getLogger(ClientHandlerInteractorImpl.class.getName());
     private final ServerInteractor serverInteractor;
     private ClientHandler clientHandler;
     private User user;
@@ -18,7 +20,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
 
     @Override
     public String getName() {
-        return user.getNick();
+        return user == null ? null : user.getNick();
     }
 
     @Override
@@ -27,7 +29,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
             authenticate();
             readMessages();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("onStart", e);
         } finally {
             closeConnection();
         }
@@ -60,6 +62,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
         clientHandler.setTimer();
         while (true) {
             String message = clientHandler.readMessage();
+            log.debug(String.format("Authorization message `%s'", message));
             if (message.startsWith(ChatCommands.CLIENT_AUTH)) {
                 String[] parts = message.split("\\s", 3);
                 if (parts.length == 3) {
@@ -82,7 +85,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
 
     private boolean checkClient() {
         if (user != null) {
-            if (serverInteractor.subscribe(this, user.getNick())) {
+            if (serverInteractor.subscribe(this)) {
                 clientHandler.sendMsg(ChatCommands.SERVER_AUTH_OK + " " + user.getNick());
                 serverInteractor.broadcastClientsList();
                 serverInteractor.broadcast(user.getNick() + " entered the chat");
@@ -101,7 +104,6 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
     private void readMessages() throws IOException {
         while (true) {
             String message = clientHandler.readMessage();
-            System.out.printf("from %s: %s\n", user.getNick(), message);
             if (message.startsWith("/")) {
                 if (message.equals(ChatCommands.CLIENT_END)) {
                     return;
@@ -118,6 +120,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
                 }
                 continue;
             }
+            log.debug(String.format("User `%s' sent message `%s'", user.getNick(), message));
             serverInteractor.broadcast(String.format("%s: %s", user.getNick(), message));
         }
     }
@@ -126,6 +129,7 @@ public class ClientHandlerInteractorImpl implements ClientHandlerInteractor {
         if (!user.getNick().equals(newNick) &&
                 serverInteractor.getUserRepository().changeNick(user.getId(), newNick)) {
             serverInteractor.broadcast(user.getNick() + " changed nick to " + newNick);
+            log.debug(String.format("User `%s' changed nick to `%s'", user.getNick(), newNick));
             user.setNick(newNick);
             serverInteractor.broadcastClientsList();
         }

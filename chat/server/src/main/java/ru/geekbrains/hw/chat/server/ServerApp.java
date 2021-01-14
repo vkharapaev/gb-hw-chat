@@ -14,7 +14,8 @@ public class ServerApp {
 
     public static void main(String[] args) throws IOException {
         int port = args.length != 1 ? DEFAULT_PORT : Integer.parseInt(args[0]);
-        ServerInteractor interactor = new ServerInteractorImpl(new RepositoryImpl(new LocalDataSource()));
+        ServerInteractor interactor = new ServerInteractorImpl(new RepositoryImpl(
+                new LocalDataSource("main.db")));
         new ServerImpl(port, interactor).start();
     }
 }

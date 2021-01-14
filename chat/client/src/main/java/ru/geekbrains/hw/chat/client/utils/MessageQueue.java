@@ -1,36 +1,12 @@
 package ru.geekbrains.hw.chat.client.utils;
 
-import java.util.concurrent.BlockingQueue;
+public interface MessageQueue {
 
-public class MessageQueue {
+    void start(MessageQueue.OnReadMessage reader);
 
-    private final BlockingQueue<String> messageQueue;
-    private Thread thread;
+    void stop();
 
-    public MessageQueue(BlockingQueue<String> messageQueue) {
-        this.messageQueue = messageQueue;
-    }
-
-    public void start(OnReadMessage reader) {
-        thread = new Thread(() -> {
-            try {
-                while (!Thread.interrupted()) {
-                    reader.read(messageQueue.take());
-                }
-            } catch (InterruptedException ignore) {
-            }
-        });
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    public void stop() {
-        if (thread != null) {
-            thread.interrupt();
-        }
-    }
-
-    public interface OnReadMessage {
+    interface OnReadMessage {
         void read(String message);
     }
 }

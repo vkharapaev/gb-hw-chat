@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.server.frameworks;
 
+import org.apache.log4j.Logger;
 import ru.geekbrains.hw.chat.server.usecases.ClientHandler;
 import ru.geekbrains.hw.chat.server.usecases.interactors.ClientHandlerInteractor;
 
@@ -11,6 +12,7 @@ import java.net.SocketException;
 
 public class ClientHandlerImpl implements ClientHandler {
 
+    private static final Logger log = Logger.getLogger(ClientHandlerImpl.class.getName());
     private static final int TIME_OUT = 120000;
 
     private final Socket socket;
@@ -18,7 +20,8 @@ public class ClientHandlerImpl implements ClientHandler {
     private final DataOutputStream out;
 
     public ClientHandlerImpl(ServerImpl server, Socket socket, ClientHandlerInteractor interactor) {
-        System.out.printf("The client %s:%d connected.\n", socket.getInetAddress().getHostAddress(), socket.getPort());
+        log.debug(String.format("The client %s:%d connected.",
+                socket.getInetAddress().getHostAddress(), socket.getPort()));
 
         this.socket = socket;
         interactor.setClientHandler(this);

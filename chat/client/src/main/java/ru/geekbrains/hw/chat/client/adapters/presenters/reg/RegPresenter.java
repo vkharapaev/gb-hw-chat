@@ -2,25 +2,27 @@ package ru.geekbrains.hw.chat.client.adapters.presenters.reg;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
-import javafx.application.Platform;
-import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
 import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
+import ru.geekbrains.hw.chat.client.utils.JavaFx;
 import ru.geekbrains.hw.chat.client.utils.MessageQueue;
+import ru.geekbrains.hw.chat.client.utils.Schedulers;
 import ru.geekbrains.hw.chat.utils.Util;
 
 public class RegPresenter implements RegContract.Presenter {
 
     private final ClientInteractor clientInteractor;
+    private final JavaFx javaFx;
+    private final Schedulers schedulers;
     private final CompositeDisposable disposables;
     private RegContract.View view;
     private MessageQueue messageQueue;
     private Disposable regDisposable;
 
-    public RegPresenter() {
-        this.clientInteractor = ClientApp.getInstance().getClient();
+    public RegPresenter(ClientInteractor clientInteractor, JavaFx javaFx, Schedulers schedulers) {
+        this.clientInteractor = clientInteractor;
+        this.javaFx = javaFx;
+        this.schedulers = schedulers;
         this.disposables = new CompositeDisposable();
     }
 
@@ -31,13 +33,13 @@ public class RegPresenter implements RegContract.Presenter {
     }
 
     private void readMessages() {
-        messageQueue = new MessageQueue(clientInteractor.getMessageQueue());
+        messageQueue = clientInteractor.getMessageQueue();
         messageQueue.start(message -> {
             if (message.startsWith(ClientInteractorImpl.MSG_END_AUTH)) {
                 close();
-                Platform.runLater(() -> view.goToChatWindow());
+                javaFx.runLater(() -> view.goToChatWindow());
             } else {
-                Platform.runLater(() -> view.showError(message));
+                javaFx.runLater(() -> view.showError(message));
             }
         });
     }
@@ -63,9 +65,7 @@ public class RegPresenter implements RegContract.Presenter {
         view.showError("Connecting...");
 
         if (regDisposable == null || regDisposable.isDisposed()) {
-            regDisposable = clientInteractor.register(login, nick, pass)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(JavaFxScheduler.platform())
+            regDisposable = schedulers.subscribeOnIoObserveOnJavaFx(clientInteractor.register(login, nick, pass))
                     .subscribe();
             disposables.add(regDisposable);
         }

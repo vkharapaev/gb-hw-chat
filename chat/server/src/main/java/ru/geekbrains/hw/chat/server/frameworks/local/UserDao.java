@@ -1,5 +1,6 @@
 package ru.geekbrains.hw.chat.server.frameworks.local;
 
+import org.apache.log4j.Logger;
 import ru.geekbrains.hw.chat.server.entities.User;
 
 import java.sql.PreparedStatement;
@@ -7,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 class UserDao extends Dao {
+
+    private static final Logger log = Logger.getLogger(UserDao.class.getName());
+
     private static final String SELECT_USER = "SELECT * FROM " + DBHelper.TABLE_USER + " WHERE " +
             DBHelper.COLUMN_LOGIN + " = ? AND " + DBHelper.COLUMN_PASS + " = ?";
     private static final int SELECT_USER_LOGIN_PARAM = 1;
@@ -46,7 +50,7 @@ class UserDao extends Dao {
                 return mapUser(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(String.format("Cannot create user login = `%s', pass = `%s'", login, pass), e);
         }
         return null;
     }
@@ -60,7 +64,7 @@ class UserDao extends Dao {
                 return mapUser(resultSet);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(String.format("Cannot get user by nick `%s'", nick), e);
         }
         return null;
     }
@@ -72,7 +76,7 @@ class UserDao extends Dao {
             statement.setLong(UPDATE_USER_NICK_ID_PARAM, userId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(String.format("Cannot change nick. UserId = `%s', newNick = `%s'", userId, newNick), e);
         }
         return false;
     }
@@ -85,7 +89,8 @@ class UserDao extends Dao {
             statement.setString(CREATE_USER_PASS_PARAM, pass);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(String.format("Cannot create user with login = `%s', nick = `%s', pass = `%s'",
+                    login, nick, pass), e);
         }
         return false;
     }

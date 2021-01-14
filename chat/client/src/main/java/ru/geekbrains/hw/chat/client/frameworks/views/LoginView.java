@@ -8,6 +8,8 @@ import javafx.scene.text.Text;
 import ru.geekbrains.hw.chat.client.ClientApp;
 import ru.geekbrains.hw.chat.client.adapters.presenters.login.LoginContract;
 import ru.geekbrains.hw.chat.client.adapters.presenters.login.LoginPresenter;
+import ru.geekbrains.hw.chat.client.utils.JavaFxImpl;
+import ru.geekbrains.hw.chat.client.utils.SchedulersImpl;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,7 +28,7 @@ public class LoginView implements Initializable, LoginContract.View {
     private final LoginPresenter presenter;
 
     public LoginView() {
-        presenter = new LoginPresenter();
+        presenter = new LoginPresenter(ClientApp.getInstance().getClient(), new JavaFxImpl(), new SchedulersImpl());
     }
 
     @Override
