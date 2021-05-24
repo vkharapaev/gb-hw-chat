@@ -5,9 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.geekbrains.hw.chat.client.adapters.data.HistoryRepositoryImpl;
+import ru.geekbrains.hw.chat.client.frameworks.ClientImpl;
+import ru.geekbrains.hw.chat.client.frameworks.HistoryDataSourceImpl;
+import ru.geekbrains.hw.chat.client.usecases.Client;
+import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractorImpl;
+import ru.geekbrains.hw.chat.client.usecases.interactors.HistoryInteractor;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractor;
+import ru.geekbrains.hw.chat.client.usecases.interactors.ClientInteractorImpl;
+import ru.geekbrains.hw.chat.client.utils.MessageQueueFactoryImpl;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -16,8 +24,9 @@ import java.util.List;
  */
 public class ClientApp extends Application {
 
-    public static final String LAYOUT_CHAT = "ui/chat/chat_layout.fxml";
-    public static final String LAYOUT_LOGIN = "ui/login/aut_layout.fxml";
+    public static final String LAYOUT_CHAT = "layouts/chat_layout.fxml";
+    public static final String LAYOUT_LOGIN = "layouts/auth_layout.fxml";
+    public static final String LAYOUT_REG = "layouts/reg_layout.fxml";
 
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 600;
@@ -29,6 +38,7 @@ public class ClientApp extends Application {
 
     private Client client;
     private Scene scene;
+    private ClientInteractor clientInteractor;
 
     public static void main(String[] args) {
         launch(args);
@@ -45,17 +55,19 @@ public class ClientApp extends Application {
     @Override
     public void init() {
         List<String> args = getParameters().getUnnamed();
+        HistoryInteractor historyInteractor =
+                new HistoryInteractorImpl(new HistoryRepositoryImpl(new HistoryDataSourceImpl()));
+        clientInteractor = new ClientInteractorImpl(new MessageQueueFactoryImpl(), historyInteractor);
         client = args.size() != 2 ?
-                new Client(DEFAULT_HOST, DEFAULT_PORT) :
-                new Client(args.get(0), Integer.parseInt(args.get(1)));
+                new ClientImpl(clientInteractor, DEFAULT_HOST, DEFAULT_PORT) :
+                new ClientImpl(clientInteractor, args.get(0), Integer.parseInt(args.get(1)));
     }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         primaryStage.setMinWidth(WINDOW_WIDTH);
         primaryStage.setMinHeight(WINDOW_HEIGHT);
-        URL resource = getClass().getResource(LAYOUT_LOGIN);
-        Parent root = FXMLLoader.load(resource);
+        Parent root = FXMLLoader.load(getClass().getResource(LAYOUT_LOGIN));
         primaryStage.setTitle(String.format("The Chat %s:%d", client.getHost(), client.getPort()));
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         primaryStage.setScene(scene);
@@ -70,7 +82,7 @@ public class ClientApp extends Application {
         }
     }
 
-    public Client getClient() {
-        return client;
+    public ClientInteractor getClient() {
+        return clientInteractor;
     }
 }
